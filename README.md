@@ -16,6 +16,9 @@ http://mpec.kmubigdata.cloud/
 $ python manage.py runserver 0:8080 & # background
 ```
 
+### Docs
+[docs link](https://docs.google.com/document/d/1wapSPp2X5S1w9uuFPpGEW4zccrDh2UhesRhJlxkcroY/edit?usp=sharing)
+
 ### SETTINGS
 #### Library
  - python 2.7
