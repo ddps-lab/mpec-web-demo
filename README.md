@@ -7,7 +7,7 @@ The proposed algorithm predicts the latency incurred when executing distributed 
  - Myungjun Son, and Kyungyong Lee, "Distributed Matrix Multiplication Performance Estimator for Machine Learning Jobs in Cloud Computing", IEEE International Conference on Cloud Computing 2018, 07/2018, [pdf](http://leeky.me/publications/cloud_2018.pdf), [ieee](https://ieeexplore.ieee.org/document/8457857)
 
 ### SITE
-http://mpec.kmubigdata.cloud/ 
+http://mpec.kmubigdata.cloud/
 
 ![image](https://user-images.githubusercontent.com/10591350/71336330-fcc90080-2589-11ea-9a47-2a1dbe9a2b1d.png)
 
