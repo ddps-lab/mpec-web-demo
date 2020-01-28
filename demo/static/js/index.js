@@ -19,7 +19,7 @@ function get_time(pred_1, pred_2, pred_3) {
 };
 
 function get_cost(time) {
-    var price = [0.014777778, 0.02222222, 0.044194444, 0.01733333, 0.0383333333]; // 100 times   
+    var price = [0.014777778, 0.02222222, 0.044194444, 0.01733333, 0.0383333333]; // 100 times
     var numMachines = [5, 10, 17, 26]; // num_worker_nodes + 1
     var cost = new Array();
     for (var i = 0; i < 5; i++)
@@ -32,7 +32,7 @@ function get_cost(time) {
     return cost;
 };
 
-function set_table(table_id, data, symbol = '') {
+function set_table(table_id, data, symbol) {
     var minVal = [86400, 86400, 86400, 86400];
     var maxVal = [0, 0, 0, 0];
 
@@ -59,7 +59,7 @@ function set_table(table_id, data, symbol = '') {
             else
                 row.cells[j].style.backgroundColor = '';
 
-            if (Number(data[idx]) < 0 || String(data[idx]).includes('-') || isNaN(data[idx])) { 
+            if (Number(data[idx]) < 0 || String(data[idx]).indexOf('-') >= 0 || isNaN(data[idx])) {
                 row.cells[j].textContent = 'NA';
                 row.cells[j].style.color = 'red';
             }
@@ -71,11 +71,11 @@ function set_table(table_id, data, symbol = '') {
     }
 };
 
-$(document).ready(function(){	
+$(document).ready(function(){
     $('#Progress_Loading').hide();
  })
 
-$("#submitBtn").on("click", function () {
+$("#submitBtn").on('click', function () {
     $('#Progress_Loading').show();
     var startTime = performance.now();
 
@@ -84,8 +84,8 @@ $("#submitBtn").on("click", function () {
         'lc': document.getElementById("lc").value,
         'rc': document.getElementById("rc").value
     };
-    port = ':80'
-    url = 'http://ec2-54-165-62-210.compute-1.amazonaws.com' + port + '/mpec/predict/'
+    port = ':80';
+    url = 'http://ec2-54-165-62-210.compute-1.amazonaws.com' + port + '/mpec/predict/';
 
     $.get(url, params).done(function (data) {
         $('#Progress_Loading').hide();
