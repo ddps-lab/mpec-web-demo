@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://code.jquery.com/jquery-1.12.4.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.7/css/uikit.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Sunflower:300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&display=swap&subset=korean"
+        rel="stylesheet">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=11">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.7/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.7/js/uikit-icons.min.js"></script>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://x3dom.org/release/x3dom.js"></script>
+    <link rel="stylesheet" href="https://x3dom.org/release/x3dom.css" />
+    <script src="https://raw.githack.com/jamesleesaunders/d3-x3d/master/dist/d3-x3d.js"></script>
+    <title>MPEC Demo</title>
+    <script>
+        $(function () {
+            $('ul.tab li').click(function () {
+                var activeTab = $(this).attr('data-tab');
+                $('ul.tab li').removeClass('current');
+                $('.tabcontent').removeClass('current');
+                $(this).addClass('current');
+                $('#' + activeTab).addClass('current');
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <nav class="uk-navbar-container uk-margin" uk-navbar="mode: click" id="navbar">
+        <div class="uk-navbar-left">
+            <span class="uk-margin-large-left" id="title">MPEC DEMO</span>
+            <ul class="uk-navbar-nav">
+                <li class="uk-active"><a href="#first" class="scroll">연구과제</a></li>
+                <li class="uk-active"><a href="#second" class="scroll">테이블</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="uk-card uk-card-default uk-margin uk-margin-large-left uk-margin-large-right card" id="first">
+        <div class="uk-card-header">
+            <div class="uk-grid-small uk-flex-middle" uk-grid>
+                <div class="uk-width-expand">
+                    <h3 class="uk-card-title uk-margin-remove-bottom">연구 과제</h3>
+                </div>
+            </div>
+        </div>
+        <div class="uk-card-body">
+            <h2>MPEC (Matrix Multiplication Performance Estimator on Cloud)</h2>
+            <p>
+                The proposed algorithm predicts the latency incurred when executing distributed matrix multiplication
+                tasks of
+                various input sizes and shapes with diverse instance types and a different number of worker nodes on
+                cloud computing
+                environments.
+
+                The NMF algorithm is widely used in recommendation systems. It factorizes an input sparse matrix A into
+                two dense
+                matrices W and H. The following table shows the latency of matrix multiplication when updating the
+                factorized matrix
+                W. Next tables represent three matrix multiplication scenarios in above mentioned it, respectively. In
+                the table,
+                the row shows the ec2 instance types and the columns is meaning of the number of Spark worker nodes.
+            </p>
+            <p id="NMFimg"><img src="../static/img/NMF_Algorithm.jpg"></p>
+        </div>
+        <div class="uk-card-footer">
+            <div class="uk-margin-small">
+                <button class="uk-button uk-button-secondary" id="btn">Code on Github</button>
+                <button class="uk-button uk-button-secondary" id="btn"><a
+                        href='http://leeky.me/publications/mpec-tcc.pdf'>See Paper</a></button>
+            </div>
+        </div>
+    </div>
+    <div class="uk-card uk-card-default uk-margin-large-left uk-margin-large-right" id="second">
+        <form class="uk-padding" uk-grid id="2" name="inForm">
+            <div class="uk-width-1-4@s">
+                <h4 class="input_label">LR</h4>
+                <input class="uk-input" type="text" placeholder="lr" id="lr" value=12000>
+            </div>
+            <div class="uk-width-1-4@s">
+                <h4 class="input_label">LC</h4>
+                <input class="uk-input" type="text" placeholder="lc" id="lc" value=22000>
+            </div>
+            <div class="uk-width-1-4@s">
+                <h4 class="input_label">RC</h4>
+                <input class="uk-input" type="text" placeholder="rc" id="rc" value=32000>
+            </div>
+            <div class="uk-width-1-4@s">
+                <div class="uk-width-1-4@s">
+                    <button type="button" class="uk-button-large uk-button uk-button-secondary uk-margin-large-left"
+                        form="inForm" id="submitBtn">Submit</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="Progress_Loading">
+            <!-- 로딩바 -->
+            <img src="../static/img/spinner.gif" />
+        </div>
+
+        <ul class="tab" uk-tab>
+            <li class="current" data-tab="tab1"><a href="#">Graph</a></li>
+            <li data-tab="tab2"><a href="#">Table</a></li>
+        </ul>
+
+        <div id="tab1" class="tabcontent current">
+            <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+                <div class="uk-width-1-2@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Time</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body graph-card">
+                        <div class="uk-overflow-auto">
+                            <div id="timeGraph"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-2@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Cost</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body graph-card">
+                        <div class="uk-overflow-auto">
+                            <div id="costGraph"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+                <div class="uk-width-1-3@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Scenario 1</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <div id="scenario1Graph"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-3@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Scenario 2</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <div id="scenario2Graph"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-3@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Scenario 3</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <div id="scenario3Graph"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="tab2" class="tabcontent">
+
+            <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+                <div class="uk-width-1-2@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Time</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-divider table_result" id="timeTab">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Instance Type</th>
+                                        <th colspan="4">Numer of Machines</th>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>9</th>
+                                        <th>16</th>
+                                        <th>25</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>r4_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>m4_4xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>c4_8xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>i3_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>d2_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-2@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Cost</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-divider table_result" id="costTab">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Instance Type</th>
+                                        <th colspan="4">Numer of Machines</th>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>9</th>
+                                        <th>16</th>
+                                        <th>25</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>r4_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>m4_4xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>c4_8xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>i3_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>d2_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+                <div class="uk-width-1-3@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Scenario 1</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-divider table_result" id="scenario_1">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Instance Type</th>
+                                        <th colspan="4">Numer of Machines</th>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>9</th>
+                                        <th>16</th>
+                                        <th>25</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>r4_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>m4_4xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>c4_8xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>i3_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>d2_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-3@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Scenario 2</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-divider table_result" id="scenario_2">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Instance Type</th>
+                                        <th colspan="4">Numer of Machines</th>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>9</th>
+                                        <th>16</th>
+                                        <th>25</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>r4_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>m4_4xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>c4_8xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>i3_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>d2_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-3@m">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">Scenario 3</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-divider table_result" id="scenario_3">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Instance Type</th>
+                                        <th colspan="4">Numer of Machines</th>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>9</th>
+                                        <th>16</th>
+                                        <th>25</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>r4_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>m4_4xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>c4_8xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>i3_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>d2_2xlarge</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="../static/js/index.js"></script>
+    <script type="text/javascript" src="../static/js/main.js"></script>
+</body>
